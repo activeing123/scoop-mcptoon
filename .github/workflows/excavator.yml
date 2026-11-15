@@ -1,0 +1,44 @@
+name: Excavator
+
+# Keeps bucket/mcptoon.json in step with the GitHub releases of activeing123/mcptoon.
+#
+# Why this exists: the manifest carries checkver/autoupdate, but those are only
+# *templates* - nothing rewrites the committed version and hash unless a job runs
+# checkver + auto-pr. Without this workflow the bucket silently pins whatever
+# version was last committed by hand. That is the same failure shape that let the
+# Homebrew tap sit four releases behind with zero errors anywhere (2026-10-01).
+#
+# Design notes:
+# - checkver follows the GitHub releases API, so a PyPI publish alone is not enough:
+#   the release asset mcptoon-<version>-win-x64.zip is what the manifest installs.
+# - auto-pr opens a PR (not a direct push), so a bad bump is reviewable and revertable.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 5 * * *'   # daily, 05:23 UTC - off the top of the hour to dodge runner spikes
+  push:
+    paths:
+      - 'bucket/mcptoon.json'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  excavator:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Scoop
+        shell: pwsh
+        run: |
+          iwr -useb get.scoop.sh | iex
+          echo "$env:USERPROFILE\scoop\shims" >> $env:GITHUB_PATH
+
+      - name: Run checkver and open a PR if a newer release exists
+        uses: ScoopInstaller/GithubActions@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          THROW_ERROR: 1
