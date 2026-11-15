@@ -1,0 +1,26 @@
+{
+  "version": "0.8.40",
+  "description": "Zero-dependency MCP gateway CLI that keeps tool and skill schemas out of your context window.",
+  "homepage": "https://github.com/activeing123/mcptoon",
+  "license": "Apache-2.0",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/activeing123/mcptoon/releases/download/v0.8.40/mcptoon-0.8.40-win-x64.zip",
+      "hash": "4d961a3a8af08b96d371c11a22220b477f9f315b946a5260023e6d3f34672a10"
+    }
+  },
+  "bin": [
+    "mcptoon\\mcptoon.exe",
+    "mcptoon\\mcptoon.cmd"
+  ],
+  "checkver": {
+    "github": "https://github.com/activeing123/mcptoon"
+  },
+  "autoupdate": {
+    "architecture": {
+      "64bit": {
+        "url": "https://github.com/activeing123/mcptoon/releases/download/v$version/mcptoon-$version-win-x64.zip"
+      }
+    }
+  }
+}
